@@ -1,11 +1,11 @@
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSAMain.exe.config
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSAMain.exe
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSAMain.pdb
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSA.dll
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSA.pdb
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.csproj.AssemblyReference.cache
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.csproj.SuggestedBindingRedirects.cache
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.csproj.CoreCompileInputs.cache
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.csproj.CopyComplete
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.exe
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\obj\Debug\RSAMain.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSALIB.dll
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSAMain\RSAMain\bin\Debug\RSALIB.pdb

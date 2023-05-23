@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,18 +12,24 @@ namespace RSAMain
 {
     internal class Program
     {
+        
+
+        private static void ShowDict<K, V>(Dictionary<K,V> d) 
+        {
+            foreach (var item in d)
+            {
+                Console.WriteLine($"{item.Key} : {item.Value}");
+            }
+        }
         static void Main(string[] args)
         {
-            RSA rsa = new RSA();
-            HashFunction hs = new HashFunction();
 
-            ulong[] k = new ulong[4];
-            for (int i = 0; i < 4; i++) k[i] = PrimeNumberGenerator.Generate();
-
-            byte[] array = hs.CreateHashCode("test.docx", "out.txt", k);
-
+            var p = WMI.GetProcessorInfo();
+            var b = WMI.GetBaseBoardInfo();
             
 
+            Console.WriteLine(p.GetHashCode());
+            Console.WriteLine(b.GetHashCode());
 
 
 

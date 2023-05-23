@@ -1,6 +1,6 @@
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\bin\Debug\RSA.dll
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\bin\Debug\RSA.pdb
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSA.csproj.AssemblyReference.cache
 C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSA.csproj.CoreCompileInputs.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSA.dll
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSA.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\bin\Debug\RSALIB.dll
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\bin\Debug\RSALIB.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSALIB.dll
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\RSA\RSA\obj\Debug\RSALIB.pdb
