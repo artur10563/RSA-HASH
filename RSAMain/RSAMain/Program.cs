@@ -23,7 +23,7 @@ namespace RSAMain
             }
         }
 
-        
+
         private static RSA rsa = new RSA();
         private static SymetricEncryptionByte des = new SymetricEncryptionByte();
         private static HashFunction hf = new HashFunction();
@@ -57,7 +57,7 @@ namespace RSAMain
             BigInteger n_a = rsa.PublicKey_PrivateKey(43, 59, out PublicKeyA, out PrivateKeyA); //43, 59 => PrimeNumberGenerator.Generate();
 
             #endregion
-            
+
             //RSA_A(H(M))
             #region RSA_A(H(M))
 
@@ -75,7 +75,7 @@ namespace RSAMain
 
             string rsaHashPlusMessagePath = "rsaHashPlusMessage.txt";
             File.WriteAllBytes(rsaHashPlusMessagePath, rsaHashPlusMessage);
-            
+
             #endregion
 
             //DES(M || RSA_A(H(M))), Session key
@@ -114,6 +114,8 @@ namespace RSAMain
             //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! n_a or n_b, PublicB or PrivateB
             rsa.EncryptFileRSA(sesKeyPath, rsaSesKeyPath, PublicKeyB, n_b);
 
+           
+
             #endregion
 
             //DES(M || RSA_A(H(M))) || RSA_B(sesKey)
@@ -129,6 +131,19 @@ namespace RSAMain
             //Console.WriteLine($"d: {d.Length}\nrb: {rb.Length}\nfinal: {final.Length}");
 
             #endregion
+
+
+            //не працює, але похоже
+            //(сокети)передаємо  зашифроване повідомлення на сервер Б, передаємо довжину RSA_B(sesKey)
+
+            string sesKeyBPath = "sesKeyB.txt";
+
+            int rsaSesKeyLength = rb.Length; //нова змінна, бо ми передаємо тільки довжину, а не сам ключ 
+            byte[] sesKeyB = new byte[rsaSesKeyLength];
+
+            Array.Copy(final, final.Length - rsaSesKeyLength, sesKeyB, 0, rsaSesKeyLength);
+
+            File.WriteAllBytes(sesKeyBPath, sesKeyB);
 
             Console.WriteLine("End");
             Console.ReadLine();
