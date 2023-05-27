@@ -33,8 +33,10 @@ namespace RSAMain
 
             //Create test text file 
             string plainTextPath = "plainText.txt";
-            string message = "test message";
-            File.WriteAllText(plainTextPath, message);
+            byte[] message = Encoding.Default.GetBytes("test message");
+            File.WriteAllBytes(plainTextPath, message);
+            int messageLength = File.ReadAllBytes(plainTextPath).Length;
+
 
             //Console.WriteLine(Encoding.Default.GetString(M)); // з байтів в строку 
 
@@ -54,7 +56,10 @@ namespace RSAMain
 
             BigInteger PublicKeyA;
             BigInteger PrivateKeyA;
-            BigInteger n_a = rsa.PublicKey_PrivateKey(43, 59, out PublicKeyA, out PrivateKeyA); //43, 59 => PrimeNumberGenerator.Generate();
+            ulong pa = 13;
+            ulong qa = 44;
+
+            BigInteger n_a = rsa.PublicKey_PrivateKey(pa, qa, out PublicKeyA, out PrivateKeyA); //43, 59 => PrimeNumberGenerator.Generate();
 
             #endregion
 
@@ -136,8 +141,9 @@ namespace RSAMain
             #endregion
 
 
+            #region server B
 
-            //(сокети)передаємо  зашифроване повідомлення на сервер Б, передаємо довжину RSA_B(sesKey) ше передається decodeKey (рядок 96) 
+            //(сокети)передаємо  зашифроване повідомлення на сервер Б, передаємо довжину RSA_B(sesKey),decodeKey (рядок 96), M.Len 
 
             //розшифровуємо ключ 
 
@@ -166,12 +172,32 @@ namespace RSAMain
             File.WriteAllBytes(desPartPath, desPart);
 
             //розшифровуємо дес, отримаємо M || RSA_A(H(M))
-            //див файл rsaHashPlusMessage.txt  i decipheredDes.txt, збігаються
+            //файли rsaHashPlusMessage, decipheredDes
             string decipheredDesPath = "decipheredDes.txt";
             des.DecipherFile(desPartPath, decipheredDesPath, decodeKey, addByte);
+            byte[] decipheredDesPart = File.ReadAllBytes(decipheredDesPath);
 
-            
+            //віднімаємо довжину M, отримуємо RSA_A(H(M))
+            string rsaAHashPartPath = "rsaAHashPart.txt";
 
+            byte[] rsaAHashPart = new byte[decipheredDesPart.Length - message.Length];
+            Array.Copy(decipheredDesPart, 0, rsaAHashPart, 0, decipheredDesPart.Length - message.Length);
+            //файли rsaAHash, rsaAHashPart
+            File.WriteAllBytes(rsaAHashPartPath, rsaAHashPart);
+
+            //Розшифровуємо отримане rsa_a(H(M))
+            string decipheredHashTextPart = "decipheredHashText.txt";
+
+            rsa.DecipherFileRsa(rsaAHashPartPath, decipheredHashTextPart, PublicKeyA, n_a);
+
+
+
+
+            Console.WriteLine($"{PublicKeyA}, {PrivateKeyA} \n {PublicKeyB}, {PrivateKeyB} \n {n_a}, {n_b}");
+
+
+
+            #endregion
 
             Console.WriteLine("End");
             Console.ReadLine();
