@@ -29,45 +29,6 @@ namespace RSALIB
         }
 
 
-        public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
-        {
-            BigInteger n_;
-            BigInteger feul;
-            e_ = 0;
-            n_ = p * q;
-            feul = (p - 1) * (q - 1);
-
-            d_ = feul - 1;
-            for (BigInteger i = 2; i <= feul; i++)
-            {
-                if ((feul % i == 0) && (d_ % i == 0))
-                {
-                    d_--;
-                    i = 1;
-                }
-            }
-
-            Random random = new Random();
-            do
-            {
-                e_ = GenerateRandomCoprime(feul, random);
-            } while (e_ == d_);
-
-            return n_;
-        }
-
-        private BigInteger GenerateRandomCoprime(BigInteger feul, Random random)
-        {
-            BigInteger number;
-            do
-            {
-                number = new BigInteger(random.Next(2, (int)feul));
-            } while (BigInteger.GreatestCommonDivisor(number, feul) != 1);
-
-            return number;
-        }
-
-
         //public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
         //{
         //    BigInteger n_;
@@ -78,23 +39,66 @@ namespace RSALIB
 
         //    d_ = feul - 1;
         //    for (BigInteger i = 2; i <= feul; i++)
+        //    {
         //        if ((feul % i == 0) && (d_ % i == 0))
         //        {
         //            d_--;
         //            i = 1;
         //        }
-
-        //    e_ = 10;
-        //    while (true)
-        //    {
-        //        if ((e_ * d_) % feul == 1)
-        //            break;
-        //        else
-        //            e_++;
         //    }
-        //    return n_;
 
+        //    Random random = new Random();
+        //    do
+        //    {
+        //        e_ = GenerateRandomCoprime(feul, random);
+        //    } while (e_ == d_);
+
+        //    return n_;
         //}
+
+        //private BigInteger GenerateRandomCoprime(BigInteger feul, Random random)
+        //{
+        //    BigInteger number;
+        //    do
+        //    {
+        //        number = new BigInteger(random.Next(2, (int)feul));
+        //    } while (BigInteger.GreatestCommonDivisor(number, feul) != 1);
+
+        //    return number;
+        //}
+
+
+        public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
+        {
+            BigInteger n_;
+            BigInteger feul;
+            e_ = 0;
+            n_ = p * q;
+            feul = (p - 1) * (q - 1);
+
+            d_ = feul - 1;
+            for (BigInteger i = 2; i <= feul; i++)
+                if ((feul % i == 0) && (d_ % i == 0))
+                {
+                    d_--;
+                    i = 1;
+                }
+
+            //шоб ключі різні були
+            e_ = d_ + n_ / 3 * 2;
+
+            //e_ = 10;
+            //while (true)
+            //{
+            //    if ((e_ * d_) % feul == 1)
+            //        break;
+            //    else
+            //        e_++;
+            //}
+
+            return n_;
+
+        }
 
 
         private ulong powRSA(ulong byt, BigInteger d_, BigInteger n_)
