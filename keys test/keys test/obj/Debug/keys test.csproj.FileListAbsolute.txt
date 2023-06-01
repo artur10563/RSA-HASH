@@ -1,8 +1,0 @@
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\bin\Debug\keys test.exe.config
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\bin\Debug\keys test.exe
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\bin\Debug\keys test.pdb
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\obj\Debug\keys test.csproj.AssemblyReference.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\obj\Debug\keys test.csproj.SuggestedBindingRedirects.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\obj\Debug\keys test.csproj.CoreCompileInputs.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\obj\Debug\keys test.exe
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\keys test\keys test\obj\Debug\keys test.pdb
