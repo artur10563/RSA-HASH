@@ -29,6 +29,8 @@ namespace RSALIB
         }
 
 
+        #region keys generation
+
         //public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
         //{
         //    BigInteger n_;
@@ -47,59 +49,86 @@ namespace RSALIB
         //        }
         //    }
 
-        //    Random random = new Random();
+
         //    do
         //    {
-        //        e_ = GenerateRandomCoprime(feul, random);
+        //        e_ = GenerateRandomCoprime(feul);
         //    } while (e_ == d_);
 
         //    return n_;
         //}
 
-        //private BigInteger GenerateRandomCoprime(BigInteger feul, Random random)
+        //private BigInteger GenerateRandomCoprime(BigInteger feul)
         //{
+        //    Random random = new Random();
         //    BigInteger number;
         //    do
         //    {
-        //        number = new BigInteger(random.Next(2, (int)feul));
+        //        number = random.Next(2, (int)feul);
         //    } while (BigInteger.GreatestCommonDivisor(number, feul) != 1);
 
         //    return number;
         //}
 
+        #endregion
 
-        public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
+        #region new keys generation
+
+        private static BigInteger CalculatePrivateKey(BigInteger openKey, BigInteger feul)
         {
-            BigInteger n_;
-            BigInteger feul;
-            e_ = 0;
-            n_ = p * q;
-            feul = (p - 1) * (q - 1);
+            BigInteger a = openKey;
+            BigInteger b = feul;
+            BigInteger x = 0;
+            BigInteger y = 1;
+            BigInteger lastX = 1;
+            BigInteger lastY = 0;
 
-            d_ = feul - 1;
-            for (BigInteger i = 2; i <= feul; i++)
-                if ((feul % i == 0) && (d_ % i == 0))
-                {
-                    d_--;
-                    i = 1;
-                }
+            while (b != BigInteger.Zero)
+            {
+                BigInteger quotient = a / b;
 
-            //шоб ключі різні були
-            e_ = d_ + n_ / 3 * 2;
+                BigInteger temp = a;
+                a = b;
+                b = temp % b;
 
-            //e_ = 10;
-            //while (true)
-            //{
-            //    if ((e_ * d_) % feul == 1)
-            //        break;
-            //    else
-            //        e_++;
-            //}
+                temp = x;
+                x = lastX - quotient * x;
+                lastX = temp;
 
-            return n_;
+                temp = y;
+                y = lastY - quotient * y;
+                lastY = temp;
+            }
 
+            if (lastX < BigInteger.Zero)
+            {
+                lastX += feul;
+            }
+
+            return lastX;
+        }
+        private static BigInteger CalculatePublicKey(BigInteger feul)
+        {
+            Random random = new Random();
+            List<BigInteger> CommonKeys = new List<BigInteger> { 65537, 17 };
+            BigInteger openKey = CommonKeys[random.Next(0, CommonKeys.Count)]; // Commonly chosen as the open exponent
+
+            return openKey;
         }
 
+        public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger publicKey, out BigInteger privateKey)
+        {
+            BigInteger n = p * q; // Calculate the product of p and q
+            BigInteger feul = (p - 1) * (q - 1); // Calculate Euler's totient function
+
+            publicKey = CalculatePublicKey(feul);
+            privateKey = CalculatePrivateKey(publicKey, feul);
+
+            return n;
+        }
+
+
+        #endregion
 
         private ulong powRSA(ulong byt, BigInteger d_, BigInteger n_)
         {

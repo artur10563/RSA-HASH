@@ -170,6 +170,19 @@ namespace RSALIB
             return key;
         }
 
+        public byte[] CorrectKeyForServerB(byte[] key)
+        {
+            byte[] DecodeKey = new byte[key.Length];
+            key = CorrectKeyWord(key, sizeOfBlock / 2);
+
+            for (int j = 0; j < quantityOfRounds; j++)
+                key = KeyToNextRound(key);
+
+            DecodeKey = KeyToPrevRound(key);
+
+            return DecodeKey;
+        }
+
         public byte[] EncryptFile(string InFile, string OutFile, byte[] key, out int AddByte)
         {
             if (key.Length > 0)

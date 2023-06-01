@@ -25,6 +25,7 @@ namespace RSALIB
             }
             return number;
         }
+        
 
         private static bool IsPrime(ulong number)
         {
