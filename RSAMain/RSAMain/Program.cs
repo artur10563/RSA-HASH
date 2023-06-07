@@ -52,11 +52,16 @@ namespace RSAMain
         static void Main(string[] args)
         {
 
+
+
+
+
             //Create test text file 
             string plainTextPath = "plainText.txt";
             byte[] message = Encoding.Default.GetBytes("test message");
             File.WriteAllBytes(plainTextPath, message);
             int messageLength = File.ReadAllBytes(plainTextPath).Length;
+
 
 
             //H(M)
@@ -75,10 +80,14 @@ namespace RSAMain
 
             BigInteger PublicKeyA;
             BigInteger PrivateKeyA;
-            ulong pa = 7;
-            ulong qa = 11;
+            //ulong pa = 43;
+            //ulong qa = 59;
+            ulong pa = PrimeNumberGenerator.Generate();
+            ulong qa = PrimeNumberGenerator.Generate();
 
             BigInteger n_a = rsa.PublicKey_PrivateKey(pa, qa, out PublicKeyA, out PrivateKeyA); //43, 59 => PrimeNumberGenerator.Generate();
+            Console.WriteLine("A keys generated");
+
 
 
 
@@ -90,7 +99,7 @@ namespace RSAMain
 
             string rsaAHashPath = "2rsaAHash.txt";
             rsa.EncryptFileRSA(hashTextPath, rsaAHashPath, PrivateKeyA, n_a);
-
+            Console.WriteLine("rsaAHash.txt is done");
             #endregion
 
             //M || RSA_A(H(M))
@@ -134,7 +143,7 @@ namespace RSAMain
             BigInteger PublicKeyB;
             BigInteger PrivateKeyB;
             BigInteger n_b = rsa.PublicKey_PrivateKey(43, 59, out PublicKeyB, out PrivateKeyB); //43, 59 => PrimeNumberGenerator.Generate();
-
+            Console.WriteLine("b keys generated");
 
             #endregion
 

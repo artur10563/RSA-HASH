@@ -29,49 +29,7 @@ namespace RSALIB
         }
 
 
-        #region keys generation
-
-        //public BigInteger PublicKey_PrivateKey(ulong p, ulong q, out BigInteger d_, out BigInteger e_)
-        //{
-        //    BigInteger n_;
-        //    BigInteger feul;
-        //    e_ = 0;
-        //    n_ = p * q;
-        //    feul = (p - 1) * (q - 1);
-
-        //    d_ = feul - 1;
-        //    for (BigInteger i = 2; i <= feul; i++)
-        //    {
-        //        if ((feul % i == 0) && (d_ % i == 0))
-        //        {
-        //            d_--;
-        //            i = 1;
-        //        }
-        //    }
-
-
-        //    do
-        //    {
-        //        e_ = GenerateRandomCoprime(feul);
-        //    } while (e_ == d_);
-
-        //    return n_;
-        //}
-
-        //private BigInteger GenerateRandomCoprime(BigInteger feul)
-        //{
-        //    Random random = new Random();
-        //    BigInteger number;
-        //    do
-        //    {
-        //        number = random.Next(2, (int)feul);
-        //    } while (BigInteger.GreatestCommonDivisor(number, feul) != 1);
-
-        //    return number;
-        //}
-
-        #endregion
-
+        
         #region new keys generation
 
         private static BigInteger CalculatePrivateKey(BigInteger openKey, BigInteger feul)
