@@ -1,8 +1,0 @@
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\bin\Debug\SocketServerB.exe.config
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\bin\Debug\SocketServerB.exe
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\bin\Debug\SocketServerB.pdb
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\obj\Debug\SocketServerB.csproj.AssemblyReference.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\obj\Debug\SocketServerB.csproj.SuggestedBindingRedirects.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\obj\Debug\SocketServerB.csproj.CoreCompileInputs.cache
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\obj\Debug\SocketServerB.exe
-C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\SocketServerB\obj\Debug\SocketServerB.pdb

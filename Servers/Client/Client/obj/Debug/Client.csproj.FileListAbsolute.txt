@@ -1,0 +1,11 @@
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\bin\Debug\Client.exe.config
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\bin\Debug\Client.exe
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\bin\Debug\Client.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\bin\Debug\RSALIB.dll
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\bin\Debug\RSALIB.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.csproj.SuggestedBindingRedirects.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.csproj.CopyComplete
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.exe
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Servers\Client\Client\obj\Debug\Client.pdb

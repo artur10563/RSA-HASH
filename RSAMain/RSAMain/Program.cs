@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using RSALIB;
@@ -49,77 +50,58 @@ namespace RSAMain
         private static HashFunction hf = new HashFunction();
 
 
-        static void Main(string[] args)
+        private static BigInteger GenerateKeys(out BigInteger PublicKey, out BigInteger PrivateKey)
         {
+            ulong pa = 43;
+            ulong qa = 59;
+            //ulong pa = PrimeNumberGenerator.Generate();
+            //ulong qa = PrimeNumberGenerator.Generate();
 
+            //return n_
+            return rsa.PublicKey_PrivateKey(pa, qa, out PublicKey, out PrivateKey);
 
+        }
 
-
-
-            //Create test text file 
-            string plainTextPath = "plainText.txt";
-            byte[] message = Encoding.Default.GetBytes("test message");
+        private static readonly string plainTextPath = "plainText.txt";
+        private static int PlainTextToFile(byte[] message)
+        {
             File.WriteAllBytes(plainTextPath, message);
-            int messageLength = File.ReadAllBytes(plainTextPath).Length;
+            return File.ReadAllBytes(plainTextPath).Length;
+        }
 
 
-
-            //H(M)
-            #region H(M)
-
+        private static readonly string hashTextPath = "1hashText.txt";
+        private static byte[] PlainTextToHash()
+        {
             //4 ulongs for HashFunction
             ulong[] iv = new ulong[4]; for (int i = 0; i < iv.Length; i++) iv[i] = PrimeNumberGenerator.Generate();
-            string hashTextPath = "1hashText.txt";
-
+            //Файл з хешом повідомлення
             byte[] hashM = hf.CreateHashCode(plainTextPath, hashTextPath, iv);
-
-            #endregion
-
-            //A Keys
-            #region A Keys
-
-            BigInteger PublicKeyA;
-            BigInteger PrivateKeyA;
-            //ulong pa = 43;
-            //ulong qa = 59;
-            ulong pa = PrimeNumberGenerator.Generate();
-            ulong qa = PrimeNumberGenerator.Generate();
-
-            BigInteger n_a = rsa.PublicKey_PrivateKey(pa, qa, out PublicKeyA, out PrivateKeyA); //43, 59 => PrimeNumberGenerator.Generate();
-            Console.WriteLine("A keys generated");
+            return hashM;
+        }
 
 
-
-
-
-            #endregion
-
-            //RSA_A(H(M))
-            #region RSA_A(H(M))
-
-            string rsaAHashPath = "2rsaAHash.txt";
+        private static readonly string rsaAHashPath = "2rsaAHash.txt";
+        private static void HashTextToRsaA(BigInteger PrivateKeyA, BigInteger n_a)
+        {
             rsa.EncryptFileRSA(hashTextPath, rsaAHashPath, PrivateKeyA, n_a);
             Console.WriteLine("rsaAHash.txt is done");
-            #endregion
+        }
 
-            //M || RSA_A(H(M))
-            #region M || RSA_A(H(M))
 
+        private static readonly string rsaHashPlusMessagePath = "3rsaHashPlusMessage.txt";
+        private static void HashTextToRsaAPlusMessage()
+        {
             byte[] M = File.ReadAllBytes(plainTextPath);
             byte[] rsaHash = File.ReadAllBytes(rsaAHashPath);
             byte[] rsaHashPlusMessage = rsaHash.Concat(M).ToArray();
 
-            string rsaHashPlusMessagePath = "3rsaHashPlusMessage.txt";
             File.WriteAllBytes(rsaHashPlusMessagePath, rsaHashPlusMessage);
+        }
 
-            #endregion
 
-            //DES(M || RSA_A(H(M))), Session key
-            #region DES(M || RSA_A(H(M))), Skey
-
-            string desPath = "4des.txt";
-            int addByte = 0;
-
+        private static byte[] GenerateDesKeys()
+        {
             //generating key
             ulong k = PrimeNumberGenerator.Generate();
             byte[] sesKey = new byte[8];
@@ -129,10 +111,59 @@ namespace RSAMain
             array = des.UlongToByte((long)k);
             Array.Copy(array, 0, sesKey, 4, 4);
 
+            return sesKey;
+        }
+        private static readonly string desPath = "4des.txt";
+        private static readonly string sesKeyPath = "5sesKey.txt";
+        private static void RsaAToDes(byte[] sesKey, out int addByte)
+        {
             des.EncryptFile(rsaHashPlusMessagePath, desPath, sesKey, out addByte);
+        }
+
+        private static readonly string rsaSesKeyPath = "6rsaBSes.txt";
+        private static readonly string finalPath = "7final.txt";
+
+        private static byte[] DesPlusRsaBSesKey(out int rsaBLength)
+        {
+            byte[] d = File.ReadAllBytes(desPath);
+            byte[] rb = File.ReadAllBytes(rsaSesKeyPath);  //RSA_B(sesKey)
+            byte[] final = d.Concat(rb).ToArray();
+            File.WriteAllBytes(finalPath, final);
+
+            rsaBLength = rb.Length;
+            return final;
+        }
+
+        static void Main(string[] args)
+        {
+
+            //Create test text file 
+            byte[] message = Encoding.Default.GetBytes("test message");
+            int messageLength = PlainTextToFile(message);
+
+            //H(M)
+            PlainTextToHash();
+
+            //A Keys
+            #region A Keys
+            BigInteger PublicKeyA;
+            BigInteger PrivateKeyA;
+            BigInteger n_a = GenerateKeys(out PublicKeyA, out PrivateKeyA);
+            #endregion
+
+            //RSA_A(H(M))
+            HashTextToRsaA(PrivateKeyA, n_a);
+
+            //M || RSA_A(H(M))
+            HashTextToRsaAPlusMessage();
+
+            //DES(M || RSA_A(H(M))), Session key
+            #region DES(M || RSA_A(H(M))), Skey
+            byte[] sesKey = GenerateDesKeys();
+            int addByte = 0;
+            RsaAToDes(sesKey, out addByte);
 
             //save session key
-            string sesKeyPath = "5sesKey.txt";
             File.WriteAllBytes(sesKeyPath, sesKey);
 
             #endregion
@@ -142,33 +173,22 @@ namespace RSAMain
 
             BigInteger PublicKeyB;
             BigInteger PrivateKeyB;
-            BigInteger n_b = rsa.PublicKey_PrivateKey(43, 59, out PublicKeyB, out PrivateKeyB); //43, 59 => PrimeNumberGenerator.Generate();
-            Console.WriteLine("b keys generated");
+            BigInteger n_b = GenerateKeys(out PublicKeyB, out PrivateKeyB);
+
 
             #endregion
 
             //RSA_B(sesKey)
-            #region RSA_B(sesKey)
-
-            string rsaSesKeyPath = "6rsaBSes.txt";
-
+            #region RSA_B(sesKey
             rsa.EncryptFileRSA(sesKeyPath, rsaSesKeyPath, PublicKeyB, n_b);
-
-
 
             #endregion
 
             //DES(M || RSA_A(H(M))) || RSA_B(sesKey)
             #region DES(M || RSA_A(H(M))) || RSA_B(sesKey)
 
-            string finalPath = "7final.txt";
-
-            byte[] d = File.ReadAllBytes(desPath);
-            byte[] rb = File.ReadAllBytes(rsaSesKeyPath);
-            byte[] final = d.Concat(rb).ToArray();
-            File.WriteAllBytes(finalPath, final);
-
-
+            int rsaBSesKeyLength;
+            byte[] final = DesPlusRsaBSesKey(out rsaBSesKeyLength);
 
             #endregion
 
@@ -181,7 +201,8 @@ namespace RSAMain
 
             string rsaSesKeyBPath = "6.1rsaSesKeyB.txt";
 
-            int rsaSesKeyLength = rb.Length; //нова змінна, бо ми передаємо тільки довжину, а не сам ключ 
+
+            int rsaSesKeyLength = rsaBSesKeyLength; //нова змінна, бо ми передаємо тільки довжину ключа сесії, а не сам ключ 
             byte[] rsaSesKeyB = new byte[rsaSesKeyLength];
 
             Array.Copy(final, final.Length - rsaSesKeyLength, rsaSesKeyB, 0, rsaSesKeyLength);
