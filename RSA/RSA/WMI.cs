@@ -52,7 +52,7 @@ namespace RSALIB
             Dictionary<string, object> filtered = info
                 .Where(item => !excludedProcessorProperties.Contains(item.Key))
                 .ToDictionary(item => item.Key, item => item.Value);
-
+            filtered
             return filtered;
 
         }

@@ -62,6 +62,8 @@ namespace RSAMain
 
         }
 
+        //Client
+        #region Client functions
         private static readonly string plainTextPath = "plainText.txt";
         private static int PlainTextToFile(byte[] message)
         {
@@ -133,13 +135,67 @@ namespace RSAMain
             rsaBLength = rb.Length;
             return final;
         }
+        #endregion
+
+        //Server
+        #region Server function
+        private static readonly string rsaSesKeyBPath = "6.1rsaSesKeyB.txt";
+        private static void DecipherSesKey(byte[] final, int rsaSesKeyLength)
+        {
+            byte[] rsaSesKeyB = new byte[rsaSesKeyLength];
+
+            Array.Copy(final, final.Length - rsaSesKeyLength, rsaSesKeyB, 0, rsaSesKeyLength);
+
+            //файли однакові 6 i 6.1 (рса ключа сесії)
+            File.WriteAllBytes(rsaSesKeyBPath, rsaSesKeyB);
+        }
+
+
+        private static readonly string decipheredSesKeyPath = "5.1decipheredKey.txt";
+
+
+        private static readonly string desPartPath = "4.1desPart.txt";
+        private static byte[] GetDesPart(byte[] final, int rsaSesKeyLength)
+        {
+            byte[] desPart = new byte[final.Length - rsaSesKeyLength];
+            Array.Copy(final, 0, desPart, 0, final.Length - rsaSesKeyLength);
+
+            //Деси сходяться, див файли 4.1desPart.txt i 4des.txt
+            File.WriteAllBytes(desPartPath, desPart);
+            return desPart;
+        }
+
+
+        private static readonly string decipheredDesPath = "3.1decipheredDes.txt";
+        private static byte[] DecipherDesPart(byte[] decipheredKey, int addByte)
+        {
+            decipheredKey = des.CorrectKeyForServerB(decipheredKey);
+            des.DecipherFile(desPartPath, decipheredDesPath, decipheredKey, addByte);
+            byte[] decipheredDesPart = File.ReadAllBytes(decipheredDesPath);
+            return decipheredDesPart;
+        }
+
+
+        private static readonly string rsaAHashPartPath = "2.1rsaAHashPart.txt";
+        private static void GetRsaAHashM(byte[] decipheredDesPart, int messageLength)
+        {
+            //віднімаємо довжину M, отримуємо RSA_A(H(M))
+            byte[] rsaAHashPart = new byte[decipheredDesPart.Length - messageLength];
+            Array.Copy(decipheredDesPart, 0, rsaAHashPart, 0, decipheredDesPart.Length - messageLength);
+
+            //файли 2rsaAHash, 2.1rsaAHashPart
+            File.WriteAllBytes(rsaAHashPartPath, rsaAHashPart);
+        }
+
+        private static readonly string decipheredHashTextPath = "1.1decipheredHashText.txt";
+        #endregion
 
         static void Main(string[] args)
         {
-
+            #region Client
             //Create test text file 
             byte[] message = Encoding.Default.GetBytes("test message");
-            int messageLength = PlainTextToFile(message);
+            int messageLength = message.Length;
 
             //H(M)
             PlainTextToHash();
@@ -192,68 +248,33 @@ namespace RSAMain
 
             #endregion
 
+            #endregion
 
-            #region server B
-
-            //(сокети)передаємо  зашифроване повідомлення на сервер Б, передаємо довжину RSA_B(sesKey), , M.Len 
-
-            //розшифровуємо ключ 
-
-            string rsaSesKeyBPath = "6.1rsaSesKeyB.txt";
+            #region Server
 
 
             int rsaSesKeyLength = rsaBSesKeyLength; //нова змінна, бо ми передаємо тільки довжину ключа сесії, а не сам ключ 
-            byte[] rsaSesKeyB = new byte[rsaSesKeyLength];
+            DecipherSesKey(final, rsaSesKeyLength);
 
-            Array.Copy(final, final.Length - rsaSesKeyLength, rsaSesKeyB, 0, rsaSesKeyLength);
-
-            //файли однакові 6 i 6.1 (рса ключа сесії)
-            File.WriteAllBytes(rsaSesKeyBPath, rsaSesKeyB);
-
-
-            string decipheredSesKeyPath = "5.1decipheredKey.txt";
 
             //розшифрували  5.1 і 5 (розшифрований ключ сесії)
             rsa.DecipherFileRsa(rsaSesKeyBPath, decipheredSesKeyPath, PrivateKeyB, n_b);
-
             byte[] decipheredKey = File.ReadAllBytes(decipheredSesKeyPath);
 
             //розшифрували ключ, віднімаємо від всього переданого зашифрованого повідомлення ключ, отримуємо частину з десом
-
-            byte[] desPart = new byte[final.Length - rsaSesKeyLength];
-            Array.Copy(final, 0, desPart, 0, final.Length - rsaSesKeyLength);
-
-            //Деси сходяться, див файли 4.1desPart.txt i 4des.txt
-            string desPartPath = "4.1desPart.txt";
-            File.WriteAllBytes(desPartPath, desPart);
+            byte[] desPart = GetDesPart(final, rsaBSesKeyLength);
 
             //розшифровуємо дес, отримаємо M || RSA_A(H(M))
-            //файли rsaHashPlusMessage, decipheredDes
-            //decodeKey не можна передавати, треба його витягнути з ключа сесії 5.1
-
             //3rsaHashPlusMessage i 3.1decipheredDes
-            string decipheredDesPath = "3.1decipheredDes.txt";
-            decipheredKey = des.CorrectKeyForServerB(decipheredKey);
-            des.DecipherFile(desPartPath, decipheredDesPath, decipheredKey, addByte);
-            byte[] decipheredDesPart = File.ReadAllBytes(decipheredDesPath);
+            byte[] decipheredDesPart = DecipherDesPart(decipheredKey, addByte);
+
 
             //віднімаємо довжину M, отримуємо RSA_A(H(M))
-            string rsaAHashPartPath = "2.1rsaAHashPart.txt";
 
-            byte[] rsaAHashPart = new byte[decipheredDesPart.Length - message.Length];
-            Array.Copy(decipheredDesPart, 0, rsaAHashPart, 0, decipheredDesPart.Length - message.Length);
-
-            //файли 2rsaAHash, 2.1rsaAHashPart
-            File.WriteAllBytes(rsaAHashPartPath, rsaAHashPart);
-
-            //файли 1hashText i 1.1decipheredHashText
-            string decipheredHashTextPath = "1.1decipheredHashText.txt";
-
-
-            //чогось не збігається
+            GetRsaAHashM(decipheredDesPart, messageLength);
+            //файли 1hashText i 1.1decipheredHashText         
+            //Розшифрований хеш, порівнюємо з початковим хешом
             rsa.DecipherFileRsa(rsaAHashPartPath, decipheredHashTextPath, PublicKeyA, n_a);
-
-
 
 
             Console.WriteLine($"{PublicKeyA}, {PrivateKeyA} \n {PublicKeyB}, {PrivateKeyB} \n {n_a}, {n_b}");

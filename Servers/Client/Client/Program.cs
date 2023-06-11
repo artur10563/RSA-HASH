@@ -8,6 +8,8 @@ using System.Net;
 using RSALIB;
 using System.IO;
 using System.Numerics;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 
 //Socket B is Client, send length of message
 namespace Client
@@ -57,7 +59,6 @@ namespace Client
         private static void HashTextToRsaA(BigInteger PrivateKeyA, BigInteger n_a)
         {
             rsa.EncryptFileRSA(hashTextPath, rsaAHashPath, PrivateKeyA, n_a);
-            Console.WriteLine("rsaAHash.txt is done");
         }
 
 
@@ -107,10 +108,24 @@ namespace Client
         }
 
         #endregion
+        private static string DictToString<K, V>(Dictionary<K, V> d)
+        {
+            if (d.Count == 0) return "";
 
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in d)
+            {
+                string key = item.Key.ToString();
+                string value = item.Value == null ? "" : item.Value.ToString();
+
+                sb.Append(key + " : " + value + "\n");
+            }
+
+            return sb.ToString().Trim();
+        }
         static void Main(string[] args)
         {
-
+            
             #region socket init
             const string ip = "127.0.0.1";
             const int port = 8080;
@@ -128,60 +143,128 @@ namespace Client
             BigInteger PublicKeyB;
             BigInteger n_b;
 
-            //Replace with WMI.GetPcInfo();
-            Console.WriteLine($"Message: ");
-            string message = Console.ReadLine();
 
-            byte[] data = Encoding.Default.GetBytes(message);
-            int messageLength = PlainTextToFile(data);
+            //Connecting to socket
+            tcpSocket.Connect(tcpEndPoint);
 
-            #region Encryption
-            //H(M)
-            PlainTextToHash();
 
-            //RSA_A(H(M))
-            HashTextToRsaA(PrivateKeyA, n_a);
+            //Отримуємо відкриті ключі B
+            byte[] receivedData = new byte[512]; //Сервер відправляє в середньому 334 байти
+
+            int totalReceivedBytes = tcpSocket.Receive(receivedData);
+            #region Receiving B keys
+
+            using (MemoryStream memoryStream = new MemoryStream(receivedData, 0, totalReceivedBytes))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+
+                PublicKeyB = (BigInteger)formatter.Deserialize(memoryStream);
+                n_b = (BigInteger)formatter.Deserialize(memoryStream);
+            }
+            Console.WriteLine("Received Server Keys...");
             #endregion
 
 
 
-            var receivedBytes = 0;
-            StringBuilder answer = new StringBuilder();
+            #region Encryption
+            //Replace with WMI.GetPcInfo();
+            //Console.WriteLine($"Message: ");
+            //string message = Console.ReadLine();
+            string message = DictToString(RSALIB.WMI.GetProcessorInfo());
 
-            //Connecting to socket
-            tcpSocket.Connect(tcpEndPoint);
-            tcpSocket.Send(Encoding.Default.GetBytes("Connected"));
+            byte[] data = Encoding.Default.GetBytes(message);
+            int messageLength = PlainTextToFile(data);
 
+            Console.WriteLine("Started Encryption...");
 
-            //Sending encrypted message
+            //H(M)
+            byte[] hash = PlainTextToHash();
 
-            //Sending length of key
+            //RSA_A(H(M))
+            HashTextToRsaA(PrivateKeyA, n_a);
 
-            //Sending length of message
+            //M || RSA_A(H(M))
+            HashTextToRsaAPlusMessage();
 
-            //Отримуємо ключ від сервера байтовими блоками
+            //DES(M || RSA_A(H(M))), Session key         
+            byte[] sesKey = GenerateDesKeys();
+            int addByte = 0;
+            RsaAToDes(sesKey, out addByte);
+            //save session key
+            File.WriteAllBytes(sesKeyPath, sesKey);
 
-            List<byte> PublicKeyBBytes = new List<byte>();
-            //byte[] PublicKeyBBytes = new byte[tcpSocket.Available];
-            Console.WriteLine(tcpSocket.Available);
-            int offset = 0;
-            do
+            //RSA_B(sesKey)
+            rsa.EncryptFileRSA(sesKeyPath, rsaSesKeyPath, PublicKeyB, n_b);
+
+            // DES(M || RSA_A(H(M))) || RSA_B(sesKey)
+            //Фінальне повідомлення, йде на сервер
+            int rsaBSesKeyLength;
+            byte[] final = DesPlusRsaBSesKey(out rsaBSesKeyLength);
+
+            Console.WriteLine("Encrypting is done!");
+            #endregion
+
+            //Надсилаємо  зашифроване повідомлення, довжину ключа сесії та довжину повідомлення.
+            //І PublicKeyA, n_a, addByte
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                byte[] dataChunk = new byte[256];
-                receivedBytes = tcpSocket.Receive(dataChunk);
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(memoryStream, final);            //зашифроване повідомлення
+                formatter.Serialize(memoryStream, rsaBSesKeyLength); //довжина ключа сесії
+                formatter.Serialize(memoryStream, data.Length);      //довжина початкового повідомлення
+                formatter.Serialize(memoryStream, PublicKeyA);       //PublicKeyA
+                formatter.Serialize(memoryStream, n_a);              //n_a
+                formatter.Serialize(memoryStream, addByte);          //addByte
+
+                byte[] serializedData = memoryStream.ToArray();
+
+                tcpSocket.Send(serializedData);
+            }
 
 
-                PublicKeyBBytes.AddRange(dataChunk);
 
-                //array.Copy(dataChunk, 0, PublicKeyBBytes, offset, receivedBytes); //кидає помилку чогось
-                //offset += receivedBytes;
+            //wait until server send's response
+            //Receive hash from server
 
-            } while (tcpSocket.Available > 0);
+            while (tcpSocket.Available == 0)
+            {
 
-            PublicKeyB = new BigInteger(PublicKeyBBytes.ToArray());
-            Console.WriteLine(PublicKeyB);
+            }
+            Thread.Sleep(3000);
 
-            Console.WriteLine(answer);
+            byte[] hashFromServer = new byte[2048];
+            int size = tcpSocket.Receive(hashFromServer);
+            Array.Resize(ref hashFromServer, size);
+
+
+
+
+
+            //Порівнюємо
+            if (hashFromServer.SequenceEqual(hash))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Success!");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Failed!");
+                Console.ResetColor();
+            }
+
+            File.Delete(plainTextPath);             // plain
+            File.Delete(hashTextPath);              //1
+            File.Delete(rsaAHashPath);              //2
+            File.Delete(rsaHashPlusMessagePath);    //3
+            File.Delete(desPath);                   //4
+            File.Delete(sesKeyPath);                //5
+            File.Delete(rsaSesKeyPath);             //6
+            File.Delete(finalPath);                 //7
+
+
+
             tcpSocket.Shutdown(SocketShutdown.Both);
             tcpSocket.Close();
 
