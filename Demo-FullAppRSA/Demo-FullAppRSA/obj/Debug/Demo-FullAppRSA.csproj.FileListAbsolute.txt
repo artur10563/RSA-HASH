@@ -1,0 +1,14 @@
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\bin\Debug\Demo-FullAppRSA.exe.config
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\bin\Debug\Demo-FullAppRSA.exe
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\bin\Debug\Demo-FullAppRSA.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.csproj.AssemblyReference.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.csproj.SuggestedBindingRedirects.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo_FullAppRSA.Form1.resources
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo_FullAppRSA.Properties.Resources.resources
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.csproj.GenerateResource.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.csproj.CoreCompileInputs.cache
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.exe
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\bin\Debug\RSALIB.dll
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\bin\Debug\RSALIB.pdb
+C:\Users\user\OneDrive\Рабочий стол\c#\myRSA\Demo-FullAppRSA\Demo-FullAppRSA\obj\Debug\Demo-FullAppRSA.csproj.CopyComplete

@@ -52,11 +52,25 @@ namespace RSALIB
             Dictionary<string, object> filtered = info
                 .Where(item => !excludedProcessorProperties.Contains(item.Key))
                 .ToDictionary(item => item.Key, item => item.Value);
-            filtered
+
             return filtered;
 
         }
+        public static string DictToString<K, V>(Dictionary<K, V> d)
+        {
+            if (d.Count == 0) return "";
 
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in d)
+            {
+                string key = item.Key.ToString();
+                string value = item.Value == null ? "" : item.Value.ToString();
+
+                sb.Append(key + " : " + value + "\n");
+            }
+
+            return sb.ToString().Trim();
+        }
     }
 
 }
