@@ -89,6 +89,7 @@
             this.buttonFullVersion.Tag = "Unlocked";
             this.buttonFullVersion.Text = "Full Version";
             this.buttonFullVersion.UseVisualStyleBackColor = false;
+            this.buttonFullVersion.Click += new System.EventHandler(this.buttonFullVersion_Click);
             // 
             // pictureBox1
             // 
@@ -96,6 +97,7 @@
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(917, 446);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
@@ -179,7 +181,7 @@
             this.buttonOlive.TabIndex = 11;
             this.buttonOlive.Tag = "Locked";
             this.buttonOlive.UseVisualStyleBackColor = false;
-            this.buttonOlive.Click += new System.EventHandler(this.buttonOlive_Click);
+            this.buttonOlive.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonDarkBrown
             // 
@@ -192,7 +194,7 @@
             this.buttonDarkBrown.TabIndex = 10;
             this.buttonDarkBrown.Tag = "Locked";
             this.buttonDarkBrown.UseVisualStyleBackColor = false;
-            this.buttonDarkBrown.Click += new System.EventHandler(this.buttonDarkBrown_Click);
+            this.buttonDarkBrown.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonCyan
             // 
@@ -205,7 +207,7 @@
             this.buttonCyan.TabIndex = 9;
             this.buttonCyan.Tag = "Locked";
             this.buttonCyan.UseVisualStyleBackColor = false;
-            this.buttonCyan.Click += new System.EventHandler(this.buttonCyan_Click);
+            this.buttonCyan.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonGray
             // 
@@ -218,7 +220,7 @@
             this.buttonGray.TabIndex = 8;
             this.buttonGray.Tag = "Locked";
             this.buttonGray.UseVisualStyleBackColor = false;
-            this.buttonGray.Click += new System.EventHandler(this.buttonGray_Click);
+            this.buttonGray.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonBrown
             // 
@@ -231,7 +233,7 @@
             this.buttonBrown.TabIndex = 7;
             this.buttonBrown.Tag = "Locked";
             this.buttonBrown.UseVisualStyleBackColor = false;
-            this.buttonBrown.Click += new System.EventHandler(this.buttonBrown_Click);
+            this.buttonBrown.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonWhite
             // 
@@ -244,7 +246,7 @@
             this.buttonWhite.TabIndex = 6;
             this.buttonWhite.Tag = "Locked";
             this.buttonWhite.UseVisualStyleBackColor = false;
-            this.buttonWhite.Click += new System.EventHandler(this.buttonWhite_Click);
+            this.buttonWhite.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonBlack
             // 
@@ -257,7 +259,7 @@
             this.buttonBlack.TabIndex = 5;
             this.buttonBlack.Tag = "Locked";
             this.buttonBlack.UseVisualStyleBackColor = false;
-            this.buttonBlack.Click += new System.EventHandler(this.buttonBlack_Click);
+            this.buttonBlack.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonDarkMagenta
             // 
@@ -270,7 +272,7 @@
             this.buttonDarkMagenta.TabIndex = 4;
             this.buttonDarkMagenta.Tag = "Locked";
             this.buttonDarkMagenta.UseVisualStyleBackColor = false;
-            this.buttonDarkMagenta.Click += new System.EventHandler(this.buttonDarkMagenta_Click);
+            this.buttonDarkMagenta.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonYellow
             // 
@@ -283,7 +285,7 @@
             this.buttonYellow.TabIndex = 3;
             this.buttonYellow.Tag = "Locked";
             this.buttonYellow.UseVisualStyleBackColor = false;
-            this.buttonYellow.Click += new System.EventHandler(this.buttonYellow_Click);
+            this.buttonYellow.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonBlue
             // 
@@ -295,7 +297,7 @@
             this.buttonBlue.TabIndex = 2;
             this.buttonBlue.Tag = "Unlocked";
             this.buttonBlue.UseVisualStyleBackColor = false;
-            this.buttonBlue.Click += new System.EventHandler(this.buttonBlue_Click);
+            this.buttonBlue.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonGreen
             // 
@@ -311,7 +313,7 @@
             this.buttonGreen.TabIndex = 1;
             this.buttonGreen.Tag = "Unlocked";
             this.buttonGreen.UseVisualStyleBackColor = false;
-            this.buttonGreen.Click += new System.EventHandler(this.buttonGreen_Click);
+            this.buttonGreen.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // buttonRed
             // 
@@ -324,7 +326,7 @@
             this.buttonRed.TabIndex = 0;
             this.buttonRed.Tag = "Unlocked";
             this.buttonRed.UseVisualStyleBackColor = false;
-            this.buttonRed.Click += new System.EventHandler(this.buttonRed_Click);
+            this.buttonRed.Click += new System.EventHandler(this.buttonAnyColor_Click);
             // 
             // Form1
             // 

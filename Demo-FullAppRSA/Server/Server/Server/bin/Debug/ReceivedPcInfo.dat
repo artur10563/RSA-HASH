@@ -1,0 +1,49 @@
+AddressWidth : 64
+Architecture : 9
+AssetTag : To Be Filled By O.E.M.
+Caption : Intel64 Family 6 Model 158 Stepping 10
+Characteristics : 236
+ConfigManagerErrorCode : 
+ConfigManagerUserConfig : 
+CreationClassName : Win32_Processor
+DataWidth : 64
+Description : Intel64 Family 6 Model 158 Stepping 10
+DeviceID : CPU0
+ExtClock : 100
+Family : 205
+InstallDate : 
+L2CacheSize : 1536
+L2CacheSpeed : 
+L3CacheSize : 9216
+L3CacheSpeed : 0
+Level : 6
+Manufacturer : GenuineIntel
+MaxClockSpeed : 2904
+Name : Intel(R) Core(TM) i5-9400 CPU @ 2.90GHz
+NumberOfCores : 6
+NumberOfEnabledCore : 6
+NumberOfLogicalProcessors : 6
+OtherFamilyDescription : 
+PartNumber : To Be Filled By O.E.M.
+PNPDeviceID : 
+PowerManagementCapabilities : 
+PowerManagementSupported : False
+ProcessorId : BFEBFBFF000906EA
+ProcessorType : 3
+Revision : 
+Role : CPU
+SecondLevelAddressTranslationExtensions : True
+SerialNumber : To Be Filled By O.E.M.
+SocketDesignation : U3E1
+Status : OK
+StatusInfo : 3
+Stepping : 
+SystemCreationClassName : Win32_ComputerSystem
+SystemName : DESKTOP-3LBTFSF
+ThreadCount : 6
+UniqueId : 
+UpgradeMethod : 50
+Version : 
+VirtualizationFirmwareEnabled : True
+VMMonitorModeExtensions : True
+VoltageCaps :

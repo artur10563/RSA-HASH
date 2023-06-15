@@ -2,15 +2,22 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Numerics;
 using System.Windows.Forms;
 using RSALIB;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Text;
+using System.Collections;
 
 namespace Demo_FullAppRSA
 {
 
     public partial class Form1 : Form
     {
+
 
         //Called every time any collor button is pressed
         private static bool IsUnlocked(Button button)
@@ -22,7 +29,7 @@ namespace Demo_FullAppRSA
 
                 if (res == DialogResult.Yes)
                 {
-                    // call full version function
+                    BuyFullVersion();
                 }
 
                 return false;
@@ -30,7 +37,6 @@ namespace Demo_FullAppRSA
             return true;
 
         }
-
 
         private static bool CheckVersionOnLaunch()
         {
@@ -43,11 +49,8 @@ namespace Demo_FullAppRSA
                 string data = WMI.DictToString(WMI.GetProcessorInfo());
                 File.WriteAllText(bufferFile1, data);
 
-
-                ulong[] iv = new ulong[4]; for (int i = 0; i < iv.Length; i++) iv[i] = PrimeNumberGenerator.Generate();
-
                 //Створили хеш заліза в buffer2
-                byte[] expectedHash = hf.CreateHashCode(bufferFile1, bufferFile2, iv);
+                byte[] expectedHash = hf.CreateHashCode(bufferFile1, bufferFile2);
 
                 //Взяли ключі з файлів
                 BigInteger OpenKey = new BigInteger(File.ReadAllBytes(publicKeyFile));
@@ -57,6 +60,10 @@ namespace Demo_FullAppRSA
                 rsa.DecipherFileRsa(checkFile, bufferFile1, OpenKey, n_);
                 byte[] decipheredHash = File.ReadAllBytes(bufferFile1);
 
+                if (File.Exists(bufferFile1)) File.Delete(bufferFile1);
+                if (File.Exists(bufferFile2)) File.Delete(bufferFile2);
+
+
                 if (expectedHash.SequenceEqual(decipheredHash))
                 {
                     return true;
@@ -65,15 +72,126 @@ namespace Demo_FullAppRSA
             return false;
         }
 
-        private static void LoadDemoSettings(Panel p)
+        private static void LoadDemoSettings()
         {
-            foreach (Control c in p.Controls)
+            foreach (Control c in colorsPanel.Controls)
             {
                 if (c is Button button)
                     if (button.Tag.ToString().CompareTo("Locked") == 0)
                     {
                         button.Image = Image.FromFile("Locked.png");
                     }
+            }
+        }
+        private static void LoadFullSettings()
+        {
+            foreach (Control c in colorsPanel.Controls)
+            {
+                if (c is Button button)
+                    if (button.Tag.ToString().CompareTo("Locked") == 0)
+                    {
+                        button.Tag = "Unlocked";
+                        button.Image = null;
+                    }
+            }
+            buttonFullVer.Dispose();
+        }
+
+        private static void BuyFullVersion()
+        {
+            //Налаштування сокета
+            const string ip = "127.0.0.1";
+            const int port = 8080;
+
+            var tcpEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            try
+            {
+                BigInteger PublicKey, n_;
+
+                tcpSocket.Connect(tcpEndPoint);
+
+                byte[] info = Encoding.Default.GetBytes(WMI.DictToString(WMI.GetProcessorInfo()));
+
+                HashFunction hf = new HashFunction();
+                        
+                //bufferFile1 - expected hash
+                File.WriteAllBytes(bufferFile2, info);
+                byte[] expectedHash = hf.CreateHashCode(bufferFile2, bufferFile1);
+
+                //Відправили хеш інфи про пк
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(memoryStream, expectedHash);
+
+                    byte[] message = memoryStream.ToArray();
+                    tcpSocket.Send(message);
+                }
+
+
+                Thread.Sleep(1000 * 5);
+
+                byte[] receivedData = new byte[1024];
+                int totalReceivedBytes = tcpSocket.Receive(receivedData);
+
+                //Отримуємо від сервера зашифрований хеш і відкритий ключ
+
+                using (MemoryStream memoryStream = new MemoryStream(receivedData, 0, totalReceivedBytes))
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+
+                    //Зашифрований хеш
+                    byte[] hash = (byte[])formatter.Deserialize(memoryStream);
+
+                    //Відкритий ключ сервера
+                    PublicKey = (BigInteger)formatter.Deserialize(memoryStream);
+                    n_ = (BigInteger)formatter.Deserialize(memoryStream);
+
+
+                    File.WriteAllBytes(checkFile, hash);
+                    File.WriteAllBytes(publicKeyFile, PublicKey.ToByteArray());
+                    File.WriteAllBytes(n_KeyFile, n_.ToByteArray());
+
+                }
+
+                RSA rsa = new RSA();
+
+                //buffer1 - encrypted Hash
+                rsa.DecipherFileRsa(checkFile, bufferFile2, PublicKey, n_);
+
+                if (File.ReadAllBytes(bufferFile1).SequenceEqual(File.ReadAllBytes(bufferFile2)))
+                {
+                    MessageBox.Show("You have full version!", "Enjoy full version!", MessageBoxButtons.OK);
+                    LoadFullSettings();
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Demo version.", "Demo access only!", MessageBoxButtons.OK);
+                    LoadDemoSettings();
+                }
+            }
+
+            catch (ObjectDisposedException ex)
+            {
+                MessageBox.Show("Can`t connect to server!", "Error!", MessageBoxButtons.OK);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK);
+            }
+            finally
+            {
+                if (tcpSocket.Connected)
+                {
+                    tcpSocket.Shutdown(SocketShutdown.Both);
+                    tcpSocket.Close();
+                }
+                if (File.Exists(bufferFile1)) File.Delete(bufferFile1);
+                if (File.Exists(bufferFile2)) File.Delete(bufferFile2);
             }
         }
 
@@ -86,29 +204,36 @@ namespace Demo_FullAppRSA
 
         private static string publicKeyFile = "keyFile.dat";
         private static string n_KeyFile = "n_file.dat";
+   
         #endregion
+
+        //Посилання на ColorsPannel
+        private static Panel colorsPanel;
+        private static Button buttonFullVer;
 
         private static Bitmap bmp;
         private static Graphics g;
         private static Color curColor;
+        private static int penSize = 15;
         public Form1()
         {
             InitializeComponent();
+            colorsPanel = ColorsPannel;
+            buttonFullVer = buttonFullVersion;
 
             //FullVersion
             if (CheckVersionOnLaunch())
             {
-
+                LoadFullSettings();
             }
             //Demo version
             else
             {
-                buttonFullVersion.Dispose();
-                LoadDemoSettings(ColorsPannel);
+                LoadDemoSettings();
             }
 
             this.StartPosition = FormStartPosition.CenterScreen;
-            curColor = Color.White;
+            curColor = Color.Red;
             bmp = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = bmp;
             g = Graphics.FromImage(bmp);
@@ -116,79 +241,13 @@ namespace Demo_FullAppRSA
         }
 
 
-        #region Color Buttons
-        private void buttonRed_Click(object sender, EventArgs e)
+        //Called for any color button
+        private void buttonAnyColor_Click(object sender, EventArgs e)
         {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Red;
+            Button b = sender as Button;
+            if (IsUnlocked(b))
+                curColor = b.BackColor;
         }
-
-        private void buttonGreen_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Green;
-        }
-
-        private void buttonBlue_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Blue;
-        }
-
-        private void buttonYellow_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Yellow;
-        }
-
-        private void buttonDarkMagenta_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.DarkMagenta;
-        }
-
-        private void buttonBlack_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Black;
-        }
-
-        private void buttonWhite_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.White;
-        }
-
-        private void buttonBrown_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Brown;
-        }
-
-        private void buttonGray_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Gray;
-        }
-
-        private void buttonCyan_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Cyan;
-        }
-
-        private void buttonDarkBrown_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Maroon;
-        }
-
-        private void buttonOlive_Click(object sender, EventArgs e)
-        {
-            if (IsUnlocked(sender as Button))
-                curColor = Color.Olive;
-        }
-        #endregion
 
         //Fill screen with color
         private void buttonFontFill_Click(object sender, EventArgs e)
@@ -248,9 +307,14 @@ namespace Demo_FullAppRSA
         {
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
-                g.FillEllipse(new SolidBrush(curColor), e.X, e.Y, 5, 5);
+                g.FillEllipse(new SolidBrush(curColor), e.X, e.Y, penSize, penSize);
                 this.Refresh();
             }
+        }
+
+        private void buttonFullVersion_Click(object sender, EventArgs e)
+        {
+            BuyFullVersion();
         }
     }
 }

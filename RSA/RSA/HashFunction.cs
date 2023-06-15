@@ -9,6 +9,12 @@ namespace RSALIB
 {
     public class HashFunction
     {
+        private static ulong[] iv = {
+                 12345678901234567890,
+                 9876543210987654321,
+                 5555555555555555555,
+                 9999999999999999999 };
+
         private const int sizeOfBlockHash = 16; //128 bit
         byte[][] Blocks;
 
@@ -34,7 +40,7 @@ namespace RSALIB
                 Array.Copy(input, i * sizeOfBlockHash, Blocks[i], 0, sizeOfBlockHash);
         }
 
-        public byte[] CreateHashCode(string InFile, string OutFile, ulong[] iv)
+        public byte[] CreateHashCode(string InFile, string OutFile)
         {
             byte[] array;
             byte[] HashCode = new byte[iv.Length * 4];
